@@ -62,6 +62,31 @@ def set_options(driver, popup_web):
     apply_option(driver, popup_web)
 
 
+def attr_to_list(player_attrs):
+    return [
+        player_attrs[0].select_one('a')['href'][7:],
+        player_attrs[0].select_one('a').text,
+        player_attrs[1].select_one('a').text,
+        player_attrs[2].text,
+        player_attrs[3].text,
+        player_attrs[4].text,
+        player_attrs[5].text,
+        player_attrs[6].text,
+        player_attrs[7].find(string=True),
+        player_attrs[8].find(string=True),
+        player_attrs[9].find(string=True),
+        player_attrs[10].text,
+        player_attrs[11].text,
+        player_attrs[12].text,
+        player_attrs[13].text,
+        player_attrs[14].text,
+        player_attrs[15].text,
+        player_attrs[16].text,
+        player_attrs[17].text,
+        player_attrs[18].text,
+    ]
+
+
 def get_stats(players_html):
     players = players_html.select('#league-players>table>tbody')[0].select('tr')
     ret = []
@@ -69,29 +94,7 @@ def get_stats(players_html):
         player_attrs = player.select('td')
         if player_attrs[0].select_one('a') is None:
             continue
-        stats = [
-            player_attrs[0].select_one('a')['href'][7:],
-            player_attrs[0].select_one('a').text,
-            player_attrs[1].select_one('a').text,
-            player_attrs[2].text,
-            player_attrs[3].text,
-            player_attrs[4].text,
-            player_attrs[5].text,
-            player_attrs[6].text,
-            player_attrs[7].find(string=True),
-            player_attrs[8].find(string=True),
-            player_attrs[9].find(string=True),
-            player_attrs[10].text,
-            player_attrs[11].text,
-            player_attrs[12].text,
-            player_attrs[13].text,
-            player_attrs[14].text,
-            player_attrs[15].text,
-            player_attrs[16].text,
-            player_attrs[17].text,
-            player_attrs[18].text,
-        ]
-        ret.append(stats)
+        ret.append(attr_to_list(player_attrs))
     return ret
 
 
