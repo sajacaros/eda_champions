@@ -52,9 +52,9 @@ def set_options(driver, popup_web):
     option_inputs = popup_web.find_elements(by=By.CSS_SELECTOR, value='.row-display > input')
     checked_list = [
         False, True, True, True, True,  # no, Player, Team, Apps, Min
-        True, False, True, True, False,  # G, NPG, A, xG, NPxG
-        True, False, True, False, False,  # xA, xGChain, xGBuildup, xG90, NPxG90
-        False, False, False, False, False  # xA90, xG90+xA90, NPxG90+xA90, xGChain90, xGBuildup90
+        True, True, True, True, True,  # G, NPG, A, xG, NPxG
+        True, True, True, True, True,  # xA, xGChain, xGBuildup, xG90, NPxG90
+        True, True, True, True, True  # xA90, xG90+xA90, NPxG90+xA90, xGChain90, xGBuildup90
     ]
     for o_input, o_check in zip(option_inputs, checked_list):
         if o_input.get_property('checked') is not o_check:
@@ -77,9 +77,19 @@ def get_stats(players_html):
             player_attrs[3].text,
             player_attrs[4].text,
             player_attrs[5].text,
-            player_attrs[6].find(string=True),
+            player_attrs[6].text,
             player_attrs[7].find(string=True),
-            player_attrs[8].text
+            player_attrs[8].find(string=True),
+            player_attrs[9].find(string=True),
+            player_attrs[10].text,
+            player_attrs[11].text,
+            player_attrs[12].text,
+            player_attrs[13].text,
+            player_attrs[14].text,
+            player_attrs[15].text,
+            player_attrs[16].text,
+            player_attrs[17].text,
+            player_attrs[18].text,
         ]
         ret.append(stats)
     return ret
@@ -119,7 +129,13 @@ def start_crawling(driver, year, parent_path='..'):
     set_options(driver, popup_web)
     with open(f'{parent_path}/data/understat_{year}.csv', 'w', newline='', encoding='utf-8') as csvfile:
         csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(['Player_no', 'Player', 'Team', 'Apps', 'Min', 'G', 'A', 'xG', 'xA', 'xGBuildup'])
+        feature_names = [
+            'Player', 'Team', 'Apps', 'Min',
+            'G', 'NPG', 'A', 'xG', 'NPxG',
+            'xA', 'xGChain', 'xGBuildup', 'xG90', 'NPxG90',
+            'xA90', 'xG90+xA90', 'NPxG90+xA90', 'xGChain90', 'xGBuildup90'
+        ]
+        csv_writer.writerow(feature_names)
         # page
         crawling_page(driver, csv_writer)
 
