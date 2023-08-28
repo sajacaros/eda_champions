@@ -1,5 +1,4 @@
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+from crawling.understat_crawling import crawling_understat
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == '__main__':
+    crawling_understat(parent_path='.')

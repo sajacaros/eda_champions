@@ -9,9 +9,9 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 
 
-def get_chrome_driver():
+def get_chrome_driver(parent_path='..'):
     config = configparser.ConfigParser()
-    config.read('../config.ini')
+    config.read(f'{parent_path}/config.ini')
     return config['DEFAULT']['path']
 
 
@@ -67,6 +67,8 @@ def get_stats(players_html):
     ret = []
     for player in players:
         player_attrs = player.select('td')
+        if player_attrs[0].select_one('a') is None:
+            continue
         stats = [
             player_attrs[0].select_one('a')['href'][7:],
             player_attrs[0].select_one('a').text,
@@ -87,12 +89,12 @@ def travel_page(driver, page_list, n, csv_writer):
     for page in page_list:
         num = page.get_attribute('data-page')
         if num is not None and int(num) == n:
-            print(f'{n} page로 이동합니다')
+            print(f'{n} page 이동')
             driver.execute_script("arguments[0].click();", page.find_element(By.CSS_SELECTOR, 'a'))
             time.sleep(1)
             stats = get_stats(BeautifulSoup(driver.page_source, 'html.parser'))
             csv_writer.writerows(stats)
-            print(f'{n} page를 크롤링 완료했습니다.')
+            print(f'{n} page 크롤링 완료')
             return
 
 
@@ -106,7 +108,7 @@ def crawling_page(driver, csv_writer):
         time.sleep(1)
 
 
-def start_crawling(driver, year):
+def start_crawling(driver, year, parent_path='..'):
     # page load
     load_page(driver, year)
     time.sleep(5)
@@ -115,26 +117,26 @@ def start_crawling(driver, year):
     time.sleep(1)
     # setting option
     set_options(driver, popup_web)
-    with open(f'../data/understat_{year}.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    with open(f'{parent_path}/data/understat_{year}.csv', 'w', newline='', encoding='utf-8') as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(['Player_no', 'Player', 'Team', 'Apps', 'Min', 'G', 'A', 'xG', 'xA', 'xGBuildup'])
         # page
         crawling_page(driver, csv_writer)
 
 
-def crawling_all_year(driver):
-    year = 2022
-    print(f'{year}년 크롤링 시작합니다.')
-    start_crawling(driver, year)
+def crawling_all_year(driver, parent_path='..'):
+    start_year, end_year = 2014, 2022
+    for year in range(start_year,end_year+1):
+        print(f'{year}년 크롤링 시작')
+        start_crawling(driver, year, parent_path)
 
 
-def crawling_understat():
+def crawling_understat(parent_path='..'):
     # 설정값 읽기
-    path = get_chrome_driver()
+    path = get_chrome_driver(parent_path)
     # driver load
     driver = chrome_driver(path)
-    crawling_all_year(driver)
-    time.sleep(100)
+    crawling_all_year(driver, parent_path)
 
 
 if __name__ == '__main__':
