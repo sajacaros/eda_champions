@@ -133,7 +133,7 @@ def start_crawling(driver, year, parent_path='..'):
     with open(f'{parent_path}/data/understat_{year}.csv', 'w', newline='', encoding='utf-8') as csvfile:
         csv_writer = csv.writer(csvfile)
         feature_names = [
-            'Player', 'Team', 'Apps', 'Min',
+            'No', 'Player', 'Team', 'Apps', 'Min',
             'G', 'NPG', 'A', 'xG', 'NPxG',
             'xA', 'xGChain', 'xGBuildup', 'xG90', 'NPxG90',
             'xA90', 'xG90+xA90', 'NPxG90+xA90', 'xGChain90', 'xGBuildup90'
