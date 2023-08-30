@@ -7,6 +7,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
+from bs4 import BeautifulSoup
+
 def get_chrome_driver(parent_path='..'):
     config = configparser.ConfigParser()
     config.read(f'{parent_path}/config.ini')
@@ -54,18 +56,21 @@ def set_all(driver):
 
 
 def crawling_page(driver, csv_writer):
-    players_web = driver.find_elements(By.CSS_SELECTOR, 'table.table > tbody > tr')
-    for n, player_web in enumerate(players_web):
-        stats_web = player_web.find_elements(By.CSS_SELECTOR, 'td')
-        # 'name', 'money-w', 'money-y', 'money-a',
+    web = BeautifulSoup(driver.page_source, 'html.parser')
+    players_web = web.select('table#table > tbody > tr')
+    print(len(players_web)/2)
+    for n in range(int(len(players_web)/2)):
+        stats_web = players_web[n].select('td')
+        # 'name', 'money-w', 'money-y', 'money-a', 'team'
         stats = [
-            stats_web[0].find_element(By.CSS_SELECTOR, 'a').text,
+            stats_web[0].select_one('a').text,
             re.sub(r'[^0-9]', '', stats_web[1].text),
             re.sub(r'[^0-9]', '', stats_web[2].text),
-            re.sub(r'[^0-9]', '', stats_web[3].text)
+            re.sub(r'[^0-9]', '', stats_web[3].text),
+            stats_web[7].select_one('a').text,
         ]
         if n%50 == 0:
-            print(f'{n}번재 진행중입니다. {stats}')
+            print(f"{n}번재 진행중입니다. {stats}")
         csv_writer.writerow(stats)
 
 
@@ -80,7 +85,7 @@ def start_crawling(driver, year, parent_path='..'):
     with open(f'{parent_path}/data/origin/capology/capology_{year}.csv', 'w', newline='', encoding='utf-8') as csvfile:
         csv_writer = csv.writer(csvfile)
         feature_names = [
-            'name', 'money-w', 'money-y', 'money-a',
+            'name', 'money-w', 'money-y', 'money-a', 'team'
         ]
         csv_writer.writerow(feature_names)
         # page
