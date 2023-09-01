@@ -4,8 +4,8 @@ from corr import corr_scatter
 from report import report_player
 
 
-def tabs():
+def tabs(df):
     return dbc.Tabs([
-        dbc.Tab(report_player(), label='report'),
-        dbc.Tab(corr_scatter(), label='corr_scatter')
+        dbc.Tab(report_player(df), label='report'),
+        dbc.Tab(corr_scatter(df), label='corr_scatter')
     ])
