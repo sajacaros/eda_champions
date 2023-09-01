@@ -85,13 +85,19 @@ def corr_scatter():
         Input(component_id='y-controls-and-radio-item', component_property='value')
     )
     def update_graph(x_col_chosen, y_col_chosen):
-        fig = px.scatter(eda_df[eda_df['Min'] > 1500], x=x_col_chosen, y=y_col_chosen)
+        fig = px.scatter(
+            eda_df[eda_df['Min'] > 1500],
+            x=x_col_chosen,
+            y=y_col_chosen,
+            hover_name='Name',
+            hover_data=["Team", "Apps", "Min", "Position", 'year']
+        )
         return fig
 
     return dbc.Card(
         dbc.CardBody([
             dbc.Row([
-                html.Div('My First App with Data', className="text-primary text-center fs-3")
+                html.Div('Relationships between features with scatter', className="text-primary text-center fs-3")
             ]),
             html.Hr(),
             dbc.Row([
