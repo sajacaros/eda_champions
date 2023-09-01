@@ -48,8 +48,9 @@ def merge(player_df, xbet_df, understat_df, capology_df):
 
 
 def feature_check(eda_df):
+    eda_df = eda_df.copy()
     eda_df = eda_df.dropna()
-    eda_df['Age Lev'] = eda_df['Age'].apply(
+    eda_df.loc[:, 'Age Lev'] = eda_df['Age'].apply(
         lambda age:
         '<23' if age < 23 else
         '<25' if age < 25 else
