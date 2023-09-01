@@ -45,18 +45,12 @@ def merge(player_df, xbet_df, understat_df, capology_df):
     return eda_df
 
 
+age_order = ['<21', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '32<']
 def feature_check(eda_df):
     eda_df = eda_df.copy()
     eda_df = eda_df.dropna()
-    eda_df.loc[:, 'Age Lev'] = eda_df['Age'].apply(
-        lambda age:
-        '<23' if age < 23 else
-        '<25' if age < 25 else
-        '<27' if age < 27 else
-        '<30' if age < 30 else
-        '<33' if age < 33 else
-        '>33'
-    )
+    eda_df['Age Lev'] = eda_df['Age'].apply(lambda age: '<21' if age < 21 else '32<' if age > 32 else f'{age}')
+    eda_df['Age Lev'] = pd.Categorical(eda_df['Age Lev'], categories=age_order, ordered=True)
     return eda_df
 
 
@@ -70,5 +64,4 @@ def get_data():
     # capology load(연봉)
     capology_df = get_capology()
     eda_df = merge(player_df, xbet_df, understat_df, capology_df)
-    eda_df = feature_check(eda_df)
-    return eda_df
+    return feature_check(eda_df)
