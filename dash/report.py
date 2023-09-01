@@ -45,6 +45,10 @@ class Profile:
     def player_df(self):
         return self._df[self._df['Name'] == self._player_name]
 
+    def change_player(self, df, player_name):
+        self._df = df
+        self._player_name = player_name
+
     def render(self):
         player_df = self.player_df.sort_values(by='year')
         return dbc.Card(dbc.Row([
@@ -71,6 +75,10 @@ class Profile:
 class Analysis(BaseBlock):
     def __init__(self, df, profile, app):
         super().__init__(app, 'Analysis')
+        self._profile = profile
+        self.sample_data = df
+
+    def change_player(self, df, profile):
         self._profile = profile
         self.sample_data = df
 
@@ -175,8 +183,7 @@ class Report(BaseBlock):
         )
         def select_name(name):
             if name:
-                self._profile = None
-                self._profile = Profile(self.sample_data, name)
+                self._profile.change_player(self.sample_data, name)
             return self._profile.render()
 
         @app.callback(
@@ -184,8 +191,7 @@ class Report(BaseBlock):
         )
         def select_name(name):
             if name:
-                self._analysis = None
-                self._analysis = Analysis(self.sample_data, self._profile, self._app)
+                self._analysis.change_player(self.sample_data, self._profile)
             return self._analysis.render()
 
     def render(self):
