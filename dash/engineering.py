@@ -6,9 +6,7 @@ import dash_bootstrap_components as dbc
 
 
 def get_player():
-    return (pd.read_csv('../data/new/players_all.csv')
-            .rename(columns={'Unnamed: 0': 'Id'})
-            .drop(['No.', 'Id'], axis=1))
+    return pd.read_csv('../data/new/players_all.csv').drop('Unnamed: 0', axis=1)
 
 
 def get_xbet():
