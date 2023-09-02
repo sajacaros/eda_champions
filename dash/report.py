@@ -21,7 +21,7 @@ def get_history(player_df):
         ret.append(dbc.Row([
             dbc.Col(row['year'], className='text-center'),
             dbc.Col(row['Team'], className='text-center'),
-            dbc.Col('£'+format(int(row['Base Salary']), ',d'))
+            dbc.Col('£' + format(int(row['Base Salary']), ',d'))
         ]))
 
     return ret
@@ -34,6 +34,7 @@ class BaseBlock:
 
         if self.app is not None and hasattr(self, 'callbacks'):
             self.callbacks(self.app)
+            print(prefix, 'init analysis')
 
 
 class Profile:
@@ -53,17 +54,20 @@ class Profile:
         player_df = self.player_df.sort_values(by='year')
         return dbc.Card(dbc.Row([
             # image div
-            dbc.Col(dbc.CardImg(src=f"https://d2zywfiolv4f83.cloudfront.net/img/players/{player_df['Player Id'].values[-1]}.jpg", top=True),width=2),
+            dbc.Col(dbc.CardImg(
+                src=f"https://d2zywfiolv4f83.cloudfront.net/img/players/{player_df['Player Id'].values[-1]}.jpg",
+                top=True), width=2),
 
             # info div
             ## position
             ## birth year
             ## team
             dbc.Col(html.Div([
-                html.H4(f'이름: {self._player_name}', className="card-title", style={'margin-bottom':'10px'}),
-                html.P(f"출생: {player_df['Birth Year'].values[-1]}", className="card-text",),
-                html.P(f"포지션: {player_df['Position'].values[-1]}", className="card-text",),
-                html.P(f"소속: {player_df['Team'].values[-1]}", className="card-text",)
+                html.H4(f'이름: {self._player_name}', className="card-title", style={'margin-bottom': '10px'}),
+                html.Hr(),
+                html.P(f"출생: {player_df['Birth Year'].values[-1]}", className="card-text", ),
+                html.P(f"포지션: {player_df['Position'].values[-1]}", className="card-text", ),
+                html.P(f"소속: {player_df['Team'].values[-1]}", className="card-text", )
             ]), width=4, align='center'),
 
             # history
@@ -82,74 +86,154 @@ class Analysis(BaseBlock):
         self._profile = profile
         self.sample_data = df
 
+    def compare_salary(self):
+        position = self._profile.player_df['Position'].to_list()[0]
+        fig = px.bar(
+            x=engineering.age_order,
+            y=self.sample_data.groupby(['Position', 'Age Lev']).mean(numeric_only=True).loc[position, 'ADJ Salary']
+        )
+        fig.add_scatter(x=self._profile.player_df['Age Lev'], y=self._profile.player_df['ADJ Salary'],
+                        mode='lines+markers')
+        return fig
+
     def callbacks(self, app):
         @app.callback(
-            Output(component_id='offensive-graph', component_property='figure'),
-            Input(component_id='offensive-radio-item', component_property='value')
+            Output(component_id='age-offensive-graph', component_property='figure'),
+            Input(component_id='age-offensive-radio-item', component_property='value')
         )
-        def update_offensive(y_col_chosen):
+        def update_age_offensive(y_col_chosen):
             position = self._profile.player_df['Position'].to_list()[0]
             fig = px.line(
                 x=engineering.age_order,
                 y=self.sample_data.groupby(['Position', 'Age Lev']).mean(numeric_only=True).loc[position, y_col_chosen],
                 markers=True
             )
-            fig.add_scatter(x=self._profile.player_df['Age Lev'], y=self._profile.player_df[y_col_chosen], mode='lines+markers')
+            fig.add_scatter(x=self._profile.player_df['Age Lev'], y=self._profile.player_df[y_col_chosen],
+                            mode='lines+markers')
 
             return fig
 
         @app.callback(
-            Output(component_id='defensive-graph', component_property='figure'),
-            Input(component_id='defensive-radio-item', component_property='value')
+            Output(component_id='age-defensive-graph', component_property='figure'),
+            Input(component_id='age-defensive-radio-item', component_property='value')
         )
-        def update_defensive(y_col_chosen):
+        def update_age_defensive(y_col_chosen):
             position = self._profile.player_df['Position'].to_list()[0]
             fig = px.line(
                 x=engineering.age_order,
                 y=self.sample_data.groupby(['Position', 'Age Lev']).mean(numeric_only=True).loc[position, y_col_chosen],
                 markers=True
             )
-            fig.add_scatter(x=self._profile.player_df['Age Lev'], y=self._profile.player_df[y_col_chosen], mode='lines+markers')
+            fig.add_scatter(x=self._profile.player_df['Age Lev'], y=self._profile.player_df[y_col_chosen],
+                            mode='lines+markers')
 
             return fig
 
-    def render(self):
+        @app.callback(
+            Output(component_id='year-offensive-graph', component_property='figure'),
+            Input(component_id='year-offensive-radio-item', component_property='value')
+        )
+        def update_year_offensive(y_col_chosen):
+            position = self._profile.player_df['Position'].to_list()[0]
+            fig = px.line(
+                x=engineering.age_order,
+                y=self.sample_data.groupby(['Position', 'Age Lev']).mean(numeric_only=True).loc[position, y_col_chosen],
+                markers=True
+            )
+            fig.add_scatter(x=self._profile.player_df['Age Lev'], y=self._profile.player_df[y_col_chosen],
+                            mode='lines+markers')
+
+            return fig
+
+        @app.callback(
+            Output(component_id='year-defensive-graph', component_property='figure'),
+            Input(component_id='year-defensive-radio-item', component_property='value')
+        )
+        def update_year_defensive(y_col_chosen):
+            position = self._profile.player_df['Position'].to_list()[0]
+            fig = px.line(
+                x=engineering.age_order,
+                y=self.sample_data.groupby(['Position', 'Age Lev']).mean(numeric_only=True).loc[position, y_col_chosen],
+                markers=True
+            )
+            fig.add_scatter(x=self._profile.player_df['Age Lev'], y=self._profile.player_df[y_col_chosen],
+                            mode='lines+markers')
+
+            return fig
+
+    def render_stats_per_age(self):
         return dbc.Row([
             dbc.Col([
                 dbc.Row([
                     dbc.RadioItems(
-                        options=[{"label": x, "value": x} for x in Report.feature_position[f"{self._profile.player_df['Position'].to_list()[0]}-o"]],
+                        options=[{"label": x, "value": x} for x in
+                                 Report.feature_position[f"{self._profile.player_df['Position'].to_list()[0]}-o"]],
                         value=Report.feature_position[f"{self._profile.player_df['Position'].to_list()[0]}-o"][0],
-                        id='offensive-radio-item',
+                        id='age-offensive-radio-item',
                         inline=True
                     )
                 ]),
-                dbc.Row([dcc.Graph(figure={}, id='offensive-graph')], className="h-20")
-            ], width=5, className="h-75"),
+                dbc.Row([dcc.Graph(figure={}, id='age-offensive-graph')])
+            ], width=4, align='end'),
             dbc.Col([
                 dbc.Row([
                     dbc.RadioItems(
-                        options=[{"label": x, "value": x} for x in Report.feature_position[f"{self._profile.player_df['Position'].to_list()[0]}-d"]],
+                        options=[{"label": x, "value": x} for x in
+                                 Report.feature_position[f"{self._profile.player_df['Position'].to_list()[0]}-d"]],
                         value=Report.feature_position[f"{self._profile.player_df['Position'].to_list()[0]}-d"][0],
-                        id='defensive-radio-item',
+                        id='age-defensive-radio-item',
                         inline=True
                     )
                 ]),
-                dbc.Row([dcc.Graph(figure={}, id='defensive-graph')], className="h-20")
-            ], width=5, className="h-75")
+                dbc.Row([dcc.Graph(figure={}, id='age-defensive-graph')])
+            ], width=4, align='end'),
+            dbc.Col([
+                dbc.Row([dcc.Graph(figure=self.compare_salary())])
+            ], width=4, align='end')
+        ])
+
+    def render_stats_per_year(self):
+        return dbc.Row([
+            dbc.Col([
+                dbc.Row([
+                    dbc.RadioItems(
+                        options=[{"label": x, "value": x} for x in
+                                 Report.feature_position[f"{self._profile.player_df['Position'].to_list()[0]}-o"]],
+                        value=Report.feature_position[f"{self._profile.player_df['Position'].to_list()[0]}-o"][0],
+                        id='year-offensive-radio-item',
+                        inline=True
+                    )
+                ]),
+                dbc.Row([dcc.Graph(figure={}, id='year-offensive-graph')])
+            ], width=4, align='end'),
+            dbc.Col([
+                dbc.Row([
+                    dbc.RadioItems(
+                        options=[{"label": x, "value": x} for x in
+                                 Report.feature_position[f"{self._profile.player_df['Position'].to_list()[0]}-d"]],
+                        value=Report.feature_position[f"{self._profile.player_df['Position'].to_list()[0]}-d"][0],
+                        id='year-defensive-radio-item',
+                        inline=True
+                    )
+                ]),
+                dbc.Row([dcc.Graph(figure={}, id='year-defensive-graph')])
+            ], width=4, align='end'),
+            dbc.Col([
+                dbc.Row([dcc.Graph(figure=self.compare_salary())])
+            ], width=4, align='end')
         ])
 
 
 class Report(BaseBlock):
     feature_position = {
         'Forward-o': ['G', 'xG', 'NPG', 'A', 'xA', 'Drb_Off'],
-        'Forward-d': ['Tackles', 'Inter'],
+        'Forward-d': ['Min', 'Tackles', 'Inter'],
         'Midfielder-o': ['G', 'xG', 'A', 'xA', 'xGBuildup', 'KeyP', 'Drb_Off', 'AvgP', 'PS%'],
-        'Midfielder-d': ['Tackles', 'Inter', 'Clear', 'Blocks'],
+        'Midfielder-d': ['Min', 'Tackles', 'Inter', 'Clear', 'Blocks'],
         'Defender-o': ['G', 'xG', 'A', 'xA', 'xGBuildup', 'AvgP', 'PS%'],
-        'Defender-d': ['Tackles', 'Inter', 'Clear', 'Blocks', 'Drb_Def'],
+        'Defender-d': ['Min', 'Tackles', 'Inter', 'Clear', 'Blocks', 'Drb_Def'],
         'Goalkeeper-o': ['xGBuildup', 'AvgP', 'PS%'],
-        'Goalkeeper-d': ['Tackles', 'Inter', 'Clear', 'Blocks', 'Drb_Def']
+        'Goalkeeper-d': ['Min', 'Tackles', 'Inter', 'Clear', 'Blocks', 'Drb_Def']
     }
 
     def __init__(self, eda_df, app, mins=1000):
@@ -187,12 +271,20 @@ class Report(BaseBlock):
             return self._profile.render()
 
         @app.callback(
-            Output("player_analysis", "children"), [Input(component_id="player-select", component_property='value')]
+            Output("player_analysis1", "children"), [Input(component_id="player-select", component_property='value')]
         )
         def select_name(name):
             if name:
                 self._analysis.change_player(self.sample_data, self._profile)
-            return self._analysis.render()
+            return self._analysis.render_stats_per_age()
+
+        @app.callback(
+            Output("player_analysis2", "children"), [Input(component_id="player-select", component_property='value')]
+        )
+        def select_name(name):
+            if name:
+                self._analysis.change_player(self.sample_data, self._profile)
+            return self._analysis.render_stats_per_year()
 
     def render(self):
         return html.Div([
@@ -215,6 +307,7 @@ class Report(BaseBlock):
                 id="collapse",
                 is_open=False,
             ),
-            html.Div(id='player_analysis'),
+            html.Div(id='player_analysis1'),
+            html.Div(id='player_analysis2'),
 
         ])
