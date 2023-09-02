@@ -59,14 +59,14 @@ class PlayerInfo:
     def salary_top100(self):
         threshold = 100
         s_eda_df = self.sample_data.sort_values(by='Base Salary', ascending=False)
-        return s_eda_df[~s_eda_df.duplicated(subset='Name', keep='first')].iloc[:threshold]['Name'].to_list()
+        return list(s_eda_df[~s_eda_df.duplicated(subset='Name', keep='first')].iloc[:threshold][['Name', 'Position']].itertuples(index=False))
 
     def render(self):
         return html.Div([
             dbc.Row([
                 dbc.Select(
                     id="player-select",
-                    options=[{'label': name, 'value': name} for name in self.salary_top100()],
+                    options=[{'label': f'{name}({position})', 'value': name} for (name, position) in self.salary_top100()],
                     value="Son Heung-Min"
                 ),
             ]),
