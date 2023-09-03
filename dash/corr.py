@@ -22,7 +22,7 @@ def corr_scatter(df, app):
             hover_data=['Team', 'Apps', 'Min', 'Position', 'year']
         )
         fig.update_layout(
-            title_text=f"{x_col_chosen} Vs. {y_col_chosen}(출전시간 < {min}m)",
+            title_text=f"{x_col_chosen} Vs. {y_col_chosen}(출전시간 > {min}m)",
             title={'x': 0.5, 'y': 0.94},
             # margin_r=0,
             # margin_l=0,

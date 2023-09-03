@@ -55,9 +55,10 @@ class PlayerInfo:
         self._profile = Profile(self.sample_data, app)
         self._stats = PlayerStats(self.sample_data, app)
 
-    def salary_top100(self):
+    def top100(self):
         threshold = 100
-        s_eda_df = self.sample_data.sort_values(by='Base Salary', ascending=False)
+        s_eda_df = self.sample_data.sort_values(by='Base Salary', ascending=False)  # 연봉으로 정렬
+        s_eda_df = s_eda_df[s_eda_df['Position'] != 'Goalkeeper']  # Goalkeeper 제외
         return list(s_eda_df[~s_eda_df.duplicated(subset='Name', keep='first')].iloc[:threshold][['Name', 'Position']].itertuples(index=False))
 
     def render(self):
@@ -65,7 +66,7 @@ class PlayerInfo:
             dbc.Row([
                 dbc.Select(
                     id="player-select",
-                    options=[{'label': f'{name}({position})', 'value': name} for (name, position) in self.salary_top100()],
+                    options=[{'label': f'{name}({position})', 'value': name} for (name, position) in self.top100()],
                     value="Son Heung-Min"
                 ),
             ]),
@@ -86,10 +87,7 @@ class PlayerInfo:
 
 class Profile(BaseBlock):
     def __init__(self, sample_data, app):
-        super().__init__(app, 'Profile')
-        self._sample_data = sample_data
-        self._player_name = None
-        self._player_df = None
+        super().__init__(sample_data, app, 'Profile')
 
     @property
     def player_df(self):
@@ -103,10 +101,6 @@ class Profile(BaseBlock):
             if name:
                 self.change_player(name)
             return self.render()
-
-    def change_player(self, player_name):
-        self._player_name = player_name
-        self._player_df = self._sample_data[self._sample_data['Name'] == player_name]
 
     def render(self):
         player_df = self._player_df.sort_values(by='year')
@@ -138,10 +132,7 @@ class Profile(BaseBlock):
 
 class PlayerStats(BaseBlock):
     def __init__(self, sample_data, app):
-        super().__init__(app, 'PlayerStats')
-        self._sample_data = sample_data
-        self._player_name = None
-        self._player_df = None
+        super().__init__(sample_data, app, 'PlayerStats')
 
     def callbacks(self, app):
         @app.callback(
@@ -152,10 +143,6 @@ class PlayerStats(BaseBlock):
             if name:
                 self.change_player(name)
             return self.render()
-
-    def change_player(self, player_name):
-        self._player_name = player_name
-        self._player_df = self._sample_data[self._sample_data['Name'] == player_name]
 
     def render(self):
         player_df = self._player_df.sort_values(by='year')
@@ -177,11 +164,8 @@ class PlayerStats(BaseBlock):
 
 class Report:
     def __init__(self, sample_data, app):
-        self._sample_data = sample_data
-        self._app = app
-        self._player_name = None
-        self._age_analysis = AnalysisAge(self._sample_data, app)
-        self._stats_analysis = AnalysisStats(self._sample_data, app)
+        self._age_analysis = AnalysisAge(sample_data, app)
+        self._stats_analysis = AnalysisStats(sample_data, app)
 
     def __call__(self, *args, **kwargs):
         return self.render()

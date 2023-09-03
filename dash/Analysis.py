@@ -9,9 +9,9 @@ feature_position = {
     'General': ['ADJ Salary', 'Apps', 'Min'],
     'Forward-o': ['G', 'xG', 'NPG', 'A', 'xA', 'Drb_Off'],
     'Forward-d': ['Tackles', 'Inter'],
-    'Midfielder-o': ['G', 'xG', 'A', 'xA', 'xGBuildup', 'KeyP', 'Drb_Off', 'AvgP', 'PS%'],
+    'Midfielder-o': ['G', 'xG', 'A', 'xA', 'xGBuildup', 'xGChain', 'KeyP', 'Drb_Off', 'AvgP', 'PS%'],
     'Midfielder-d': ['Tackles', 'Inter', 'Clear', 'Blocks'],
-    'Defender-o': ['G', 'xG', 'A', 'xA', 'xGBuildup', 'AvgP', 'PS%'],
+    'Defender-o': ['G', 'A', 'xGBuildup', 'AvgP', 'PS%'],
     'Defender-d': ['Tackles', 'Inter', 'Clear', 'Blocks', 'Drb_Def'],
     'Goalkeeper-o': ['xGBuildup', 'AvgP', 'PS%'],
     'Goalkeeper-d': ['Tackles', 'Inter', 'Clear', 'Blocks', 'Drb_Def']
@@ -20,10 +20,7 @@ feature_position = {
 
 class AnalysisAge(BaseBlock):
     def __init__(self, df, app):
-        super().__init__(app, 'Analysis')
-        self._sample_data = df
-        self._player_name = None
-        self._player_df = None
+        super().__init__(df, app, 'Analysis')
 
     def callbacks(self, app):
         @app.callback(
@@ -80,10 +77,6 @@ class AnalysisAge(BaseBlock):
             )
             return fig
 
-    def change_player(self, player_name):
-        self._player_name = player_name
-        self._player_df = self._sample_data[self._sample_data['Name'] == player_name]
-
     def render(self):
         return dbc.Row([
             dbc.Col([
@@ -124,13 +117,9 @@ class AnalysisAge(BaseBlock):
             ], width=4, align='end'),
         ])
 
-
 class AnalysisStats(BaseBlock):
     def __init__(self, df, app):
-        super().__init__(app, 'Analysis')
-        self._sample_data = df
-        self._player_name = None
-        self._player_df = None
+        super().__init__(df, app, 'Analysis')
 
     def callbacks(self, app):
         @app.callback(
@@ -163,6 +152,13 @@ class AnalysisStats(BaseBlock):
         def update_stats_xgbuildup(v):
             return update_stats(['xGBuildup'])
 
+        @app.callback(
+            Output(component_id='min-graph', component_property='figure'),
+            Input(component_id='player-select', component_property='value')
+        )
+        def update_stats_min(v):
+            return update_stats(['Min'])
+
         def update_stats(features: list):
             fig = px.line(
                 x=self._player_df.year,
@@ -184,21 +180,21 @@ class AnalysisStats(BaseBlock):
                 margin_l=0,
                 height=300
             )
+            fig.update_xaxes(tickvals=[year for year in range(2014, 2022+1)])
             return fig
-
-    def change_player(self, player_name):
-        self._player_name = player_name
-        self._player_df = self._sample_data[self._sample_data['Name'] == player_name]
 
     def render(self):
         return dbc.Row([
             dbc.Col([
                 dbc.Row([dcc.Graph(figure={}, id='g-graph', config={'displayModeBar': False})])
-            ], width=4, align='end'),
+            ], width=3, align='end'),
             dbc.Col([
                 dbc.Row([dcc.Graph(figure={}, id='a-graph', config={'displayModeBar': False})])
-            ], width=4, align='end'),
+            ], width=3, align='end'),
             dbc.Col([
                 dbc.Row([dcc.Graph(figure={}, id='xgbuildup-graph', config={'displayModeBar': False})])
-            ], width=4, align='end'),
+            ], width=3, align='end'),
+            dbc.Col([
+                dbc.Row([dcc.Graph(figure={}, id='min-graph', config={'displayModeBar': False})])
+            ], width=3, align='end')
         ])

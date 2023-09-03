@@ -6,15 +6,15 @@ def get_player():
 
 
 def get_xbet():
-    return (pd.read_csv('../data/new/1xbet_all.csv')
+    df = (pd.read_csv('../data/new/1xbet_all.csv')
             .drop(['Team', 'Age', 'Position'], axis=1)
             .rename(columns={'Drb_x': 'Drb_Off', 'Drb_y': 'Drb_Def'}))
+    df['Rating'] = df['Rating'] * 10
+    return df
 
 
 def get_understat():
-    return (pd.read_csv('../data/new/understat_all.csv')
-            .drop(['No', 'Team'], axis=1))
-
+    return pd.read_csv('../data/new/understat_all.csv').drop(['No', 'Team'], axis=1)
 
 def get_capology():
     return pd.read_csv('../data/new/capology_all.csv')
