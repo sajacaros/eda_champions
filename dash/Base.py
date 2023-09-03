@@ -15,7 +15,7 @@ class BaseBlock(metaclass=ABCMeta):
             print(prefix, 'init analysis')
 
     @abstractmethod
-    def callbacks(self):
+    def callbacks(self, app):
         pass
 
     def change_player(self, player_name):

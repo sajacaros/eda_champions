@@ -1,10 +1,10 @@
-from abc import ABCMeta, abstractmethod
-
 import dash_bootstrap_components as dbc
 import plotly.express as px
 from dash import html, Output, Input, dcc
+
 from Analysis import AnalysisAge, AnalysisStats
 from Base import BaseBlock
+from Similarity import CosineSimilarity
 
 
 def report_player(df, app, mins=1000):
@@ -104,29 +104,31 @@ class Profile(BaseBlock):
 
     def render(self):
         player_df = self._player_df.sort_values(by='year')
-        return dbc.Card([dbc.Row([
-            # image div
-            dbc.Col(dbc.CardImg(
-                src=f"https://d2zywfiolv4f83.cloudfront.net/img/players/{player_df['Player Id'].values[-1]}.jpg",
-                top=True), width=4),
+        return dbc.Card([
+            dbc.Row([
+                # image div
+                dbc.Col(dbc.CardImg(
+                    src=f"https://d2zywfiolv4f83.cloudfront.net/img/players/{player_df['Player Id'].values[-1]}.jpg",
+                    top=True), width=4),
 
-            # info div
-            ## position, birth year, team
-            dbc.Col(html.Div([
-                html.H5(f'이름: {self._player_name}', className="card-title",
-                        style={'margin-bottom': '10px', 'margin-top': '10px'}),
-                html.Hr(),
-                html.P(f"출생: {player_df['Birth Year'].values[-1]}({2023 - player_df['Birth Year'].values[-1]})",
-                       className="card-text", ),
-                html.P(f"포지션: {player_df['Position'].values[-1]}", className="card-text", ),
-                html.P(f"소속: {player_df['Team'].values[-1]}", className="card-text", )
-            ]), width=8, align='center')
-        ]), dbc.Row([
+                # info div
+                ## position, birth year, team
+                dbc.Col(html.Div([
+                    html.H5(f'이름: {self._player_name}', className="card-title",
+                            style={'margin-bottom': '10px', 'margin-top': '10px'}),
+                    html.Hr(),
+                    html.P(f"출생: {player_df['Birth Year'].values[-1]}({2023 - player_df['Birth Year'].values[-1]})",
+                           className="card-text", ),
+                    html.P(f"포지션: {player_df['Position'].values[-1]}", className="card-text", ),
+                    html.P(f"소속: {player_df['Team'].values[-1]}", className="card-text", )
+                ]), width=8, align='center')
+            ]),
+            dbc.Row([
 
-            # history
-            ## 연도 - 팀 - 연봉
-            dbc.Col(html.Div([*get_history(player_df)]), width=12, className='text-end')
-        ], style={'margin-top': '10px'})
+                # history
+                ## 연도 - 팀 - 연봉
+                dbc.Col(html.Div([*get_history(player_df)]), width=12, className='text-end')
+            ], style={'margin-top': '10px'})
         ], style={'height': '50vh'})
 
 
@@ -166,13 +168,14 @@ class Report:
     def __init__(self, sample_data, app):
         self._age_analysis = AnalysisAge(sample_data, app)
         self._stats_analysis = AnalysisStats(sample_data, app)
+        self._similarity_analysis = CosineSimilarity(sample_data, app)
 
     def __call__(self, *args, **kwargs):
         return self.render()
 
     def render(self):
         return html.Div([
-            dbc.Row([dbc.Col(html.Div(id='player_stats_analysis'))], style={'height': '32vh'}),
-            dbc.Row([dbc.Col(html.Div(id='player_age_analysis'))], style={'height': '32vh'}),
-            dbc.Row([dbc.Col(html.Div(id='player_similar'))], style={'height': '31vh'})
+            dbc.Row([dbc.Col(html.Div(id='player_stats_analysis'))]),
+            dbc.Row([dbc.Col(html.Div(id='player_age_analysis'))]),
+            dbc.Row([dbc.Col(html.Div(id='player_similarity'))])
         ])
