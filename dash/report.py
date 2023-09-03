@@ -55,8 +55,8 @@ class PlayerInfo:
         self._profile = Profile(self.sample_data, app)
         self._stats = PlayerStats(self.sample_data, app)
 
-    def top100(self):
-        threshold = 100
+    def recommend_players(self):
+        threshold = 200
         s_eda_df = self.sample_data.sort_values(by='Base Salary', ascending=False)  # 연봉으로 정렬
         s_eda_df = s_eda_df[s_eda_df['Position'] != 'Goalkeeper']  # Goalkeeper 제외
         return list(s_eda_df[~s_eda_df.duplicated(subset='Name', keep='first')].iloc[:threshold][['Name', 'Position']].itertuples(index=False))
@@ -66,7 +66,7 @@ class PlayerInfo:
             dbc.Row([
                 dbc.Select(
                     id="player-select",
-                    options=[{'label': f'{name}({position})', 'value': name} for (name, position) in self.top100()],
+                    options=[{'label': f'{name}({position})', 'value': name} for (name, position) in self.recommend_players()],
                     value="Son Heung-Min"
                 ),
             ]),
