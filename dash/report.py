@@ -188,7 +188,7 @@ class Report:
 
     def render(self):
         return html.Div([
-            dbc.Row([dbc.Col(html.Div(id='player_age_analysis'))], style={'height': '32vh'}),
             dbc.Row([dbc.Col(html.Div(id='player_stats_analysis'))], style={'height': '32vh'}),
+            dbc.Row([dbc.Col(html.Div(id='player_age_analysis'))], style={'height': '32vh'}),
             dbc.Row([dbc.Col(html.Div(id='player_similar'))], style={'height': '31vh'})
         ])
