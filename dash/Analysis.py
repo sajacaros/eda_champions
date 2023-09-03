@@ -55,25 +55,32 @@ class AnalysisAge(BaseBlock):
 
         def update_stats(y_col_chosen, category):
             position = self._player_df['Position'].to_list()[0]
-            fig = px.line(
+            fig = px.line(labels={'x': 'Age', 'y': y_col_chosen})
+            fig = fig.add_scatter(
+                name='Avg',
                 x=engineering.age_order,
-                y=self._sample_data.groupby(['Position', 'Age Lev']).mean(numeric_only=True).loc[
-                    position, y_col_chosen],
-                markers=True,
-                labels={'x': 'Age', 'y': y_col_chosen}
+                y=self._sample_data.groupby(['Position', 'Age Lev']).mean(numeric_only=True).loc[position, y_col_chosen],
+                mode='lines+markers',
+                showlegend=True
             )
             fig.add_scatter(
+                name='Player',
                 x=self._player_df['Age Lev'],
                 y=self._player_df[y_col_chosen],
                 mode='lines+markers',
-                showlegend=False
+                showlegend=True
             )
             fig.update_layout(
                 title_text=f"{category} - '{y_col_chosen}' stats",
                 title={'x': 0.5, 'y': 0.94},
                 margin_r=0,
                 margin_l=0,
-                height=300
+                height=300,
+                legend_yanchor="top",
+                legend_y=0.99,
+                legend_xanchor="left",
+                legend_x=0.01,
+                legend_bgcolor='rgba(0,0,0,0)'
             )
             return fig
 
@@ -160,27 +167,36 @@ class AnalysisStats(BaseBlock):
             return update_stats(['Min'])
 
         def update_stats(features: list):
-            fig = px.line(
+            fig = px.line(labels={'x': 'year', 'y': f"{' - '.join(features)}"})
+            fig = fig.add_scatter(
+                name=features[0],
                 x=self._player_df.year,
                 y=self._player_df[features[0]],
-                markers=True,
-                labels={'x': 'year', 'y': f"{' - '.join(features)}"}
+                mode='lines+markers',
+                showlegend=True
             )
             if len(features) > 1:
                 fig.add_scatter(
+                    name=features[1],
                     x=self._player_df.year,
                     y=self._player_df[features[1]],
-                    mode='lines+markers',
-                    showlegend=False
+                    mode='lines+markers'
                 )
+
             fig.update_layout(
                 title_text=f"{self._player_name}'s {' - '.join(features)}",
                 title={'x': 0.5, 'y': 0.94},
                 margin_r=0,
                 margin_l=0,
-                height=300
+                height=300,
+                legend_yanchor="top",
+                legend_y=0.99,
+                legend_xanchor="left",
+                legend_x=0.01,
+                legend_bgcolor='rgba(0,0,0,0)'
             )
-            fig.update_xaxes(tickvals=[year for year in range(2014, 2022+1)])
+            # fig.update_xaxes(range=[2013, 2023])
+            # self._sample_data
             return fig
 
     def render(self):
