@@ -7,7 +7,7 @@ from dictionary import explain_terms
 
 def tabs(df, app):
     return dbc.Tabs([
-        dbc.Tab(report_player(df, app), label='report'),
         dbc.Tab(corr_scatter(df, app), label='corr_scatter'),
+        dbc.Tab(report_player(df, app), label='report'),
         dbc.Tab(explain_terms(), label='dictionary')
     ])

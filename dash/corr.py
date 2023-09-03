@@ -33,7 +33,7 @@ def corr_scatter(df, app):
     return dbc.Card(
         dbc.CardBody([
             dbc.Row([
-                html.Div('Relationships between features with scatter', className="text-primary text-center fs-3")
+                html.Div('Relationships between Features with Scatter', className="text-primary text-center fs-3")
             ]),
             html.Hr(),
             dbc.Row(
@@ -42,7 +42,7 @@ def corr_scatter(df, app):
                     dbc.Col(
                         dbc.RadioItems(
                             options=[{"label": x, "value": x} for x in df.columns],
-                            value='Rating',
+                            value='ADJ Salary',
                             id='x-controls-and-radio-item',
                             inline=True
                         ),
@@ -57,7 +57,7 @@ def corr_scatter(df, app):
                     dbc.Col(
                         dbc.RadioItems(
                             options=[{"label": x, "value": x} for x in df.columns],
-                            value='ADJ Salary',
+                            value='Rating',
                             id='y-controls-and-radio-item',
                             inline=True
                         ),
@@ -65,32 +65,36 @@ def corr_scatter(df, app):
                     )
                 ]
             ),
+            html.Hr(),
             dbc.Row([
-                dbc.Row([
-                    dbc.Col(html.Span('최저 출전 시간(m)'), width=1),
-                    dbc.Col(
-                        dcc.RadioItems(
-                            id="min",
-                            options=[1000, 1100, 1200, 1300, 1400],
-                            value=1000,
-                            inline=True
-                        ),
-                        width=11
-                    )
-                ]),
-                dbc.Row(dcc.Graph(figure={}, id='controls-and-graph',config={'displayModeBar': False})),
-                dbc.Row([
-                    dbc.Col(html.Span('포지션 선택'), width=1),
-                    dbc.Col(
-                        dcc.Checklist(
-                            id="checklist",
-                            options=["Forward", "Midfielder", "Defender", "Goalkeeper"],
-                            value=["Forward", "Midfielder", "Defender", "Goalkeeper"],
-                            inline=True
-                        ),
-                        width=11
-                    )
-                ])
-            ])
+                dbc.Col(html.Span('최저 출전 시간(m)'), width=1),
+                dbc.Col(
+                    dcc.RadioItems(
+                        id="min",
+                        options=list(range(1000,2100,100)),
+                        value=1000,
+                        inline=True,
+                        inputStyle={"margin-right": "5px"},
+                        labelStyle={"margin-right": "20px"}
+                    ),
+                    width=11
+                )
+            ]),
+            html.Hr(),
+            dbc.Row([
+                dbc.Col(html.Span('포지션 선택'), width=1),
+                dbc.Col(
+                    dcc.Checklist(
+                        id="checklist",
+                        options=["Forward", "Midfielder", "Defender", "Goalkeeper"],
+                        value=["Forward", "Midfielder", "Defender", "Goalkeeper"],
+                        inline=True,
+                        inputStyle={"margin-right": "5px"},
+                        labelStyle={"margin-right": "20px"}
+                    ),
+                    width=11
+                )
+            ]),
+            dbc.Row(dcc.Graph(figure={}, id='controls-and-graph',config={'displayModeBar': False})),
         ])
     )
