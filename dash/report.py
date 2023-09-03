@@ -124,7 +124,6 @@ class Profile(BaseBlock):
                 ]), width=8, align='center')
             ]),
             dbc.Row([
-
                 # history
                 ## 연도 - 팀 - 연봉
                 dbc.Col(html.Div([*get_history(player_df)]), width=12, className='text-end')
