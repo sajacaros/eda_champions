@@ -44,16 +44,25 @@ def similarity_profile(similarity_df):
 class CosineSimilarity(BaseBlock):
     def __init__(self, df, app):
         super(CosineSimilarity, self).__init__(df, app)
-        self._scaled_df = self.scale()
+        self._scaled_df = self.scale(RobustScaler())
 
-    def scale(self):
+    def scale(self, scaler):
         featured_df = self._sample_data.copy()
         featured_df.Position = pd.factorize(featured_df.Position)[0]
         featured_df = featured_df.drop(
-            ['Player Id', 'Name', 'Team', 'Birth Year', 'Weekly Salary', 'year', 'Base Salary', 'Age Lev'],
+            [
+                'Player Id', 'Name', 'Team', 'Birth Year', 'year',
+                'Weekly Salary', 'Base Salary', 'ADJ Salary',
+                'Age', 'Age Lev', 'Apps',
+                'xG90', 'NPxG90', 'xA90', 'xGChain90', 'xGBuildup90',
+                'xG90+xA90', 'NPxG90+xA90'
+            ],
             axis=1
         )
-        scaler = RobustScaler()
+        # ['Position', 'Min', 'G', 'NPG', 'A', 'xG', 'NPxG', 'xA','xGChain', 'xGBuildup', 'SpG',
+        #  'KeyP', 'Drb_Off', 'Fouled', 'Off', 'Disp', 'UnsTch', 'Rating',
+        #  'Tackles', 'Inter', 'Fouls', 'Offsides', 'Clear', 'Drb_Def', 'Blocks',
+        #  'AvgP', 'PS%']
         return pd.DataFrame(
             scaler.fit_transform(featured_df),
             index=featured_df.index,
@@ -70,11 +79,14 @@ class CosineSimilarity(BaseBlock):
                 self.change_player(name)
             return self.render()
 
-    def render(self):
+    def prepare_for_similarity(self):
         df = self._sample_data.copy()
         player_indexes = self._sample_data[self._sample_data['Name'] == self._player_name].index
         similarity = cosine_similarity(self._scaled_df.loc[list(player_indexes)], self._scaled_df)
         df['similarity'] = similarity.sum(axis=0)
         df['similarity-rank'] = df['similarity'].rank(ascending=False)
-        similarity_df = df[df['Name'] != self._player_name].sort_values('similarity-rank')
+        return df[df['Name'] != self._player_name].sort_values('similarity-rank')
+
+    def render(self):
+        similarity_df = self.prepare_for_similarity()
         return similarity_profile(similarity_df[~similarity_df.duplicated(['Name'], keep='first')].iloc[:3])
