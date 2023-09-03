@@ -18,7 +18,12 @@ stats = {
 
 
 def explain_terms():
-    rows = []
-    for (feature, mean) in zip(stats['feature'], stats['mean']):
-        rows.append(html.Div([html.Span(feature), html.Span(' - '), html.Span(mean)]))
-    return html.Div(rows)
+    rows = [html.Div(html.H4('< Feature 설명 >'))]
+    for idx, (feature, mean) in enumerate(zip(stats['feature'], stats['mean'])):
+        rows.append(
+            html.Div(
+                [html.Span(feature, style={'color': 'red'}), html.Span(' - '), html.Span(mean, style={'color': 'blue'})],
+                style={'fontSize': 18}
+            )
+        )
+    return html.Div(rows, style={'marginLeft': 20, 'marginTop': 20})
