@@ -3,13 +3,12 @@ from abc import ABCMeta, abstractmethod
 import dash_bootstrap_components as dbc
 import plotly.express as px
 from dash import html, Output, Input, dcc
-from Analysis import AnalysisAge
+from Analysis import AnalysisAge, AnalysisStats
 from Base import BaseBlock
 
 
 def report_player(df, app, mins=1000):
     sample_data = df[df['Min'] > mins]
-    print(len(sample_data))
     report = Report(sample_data, app)
     player_info = PlayerInfo(sample_data, app)
     sidebar = html.Div(
@@ -181,7 +180,8 @@ class Report:
         self._sample_data = sample_data
         self._app = app
         self._player_name = None
-        self._analysis = AnalysisAge(self._sample_data, app)
+        self._age_analysis = AnalysisAge(self._sample_data, app)
+        self._stats_analysis = AnalysisStats(self._sample_data, app)
 
     def __call__(self, *args, **kwargs):
         return self.render()
@@ -189,6 +189,6 @@ class Report:
     def render(self):
         return html.Div([
             dbc.Row([dbc.Col(html.Div(id='player_age_analysis'))], style={'height': '32vh'}),
-            dbc.Row([dbc.Col(html.Div(id='player_analysis2'))], style={'height': '32vh'}),
+            dbc.Row([dbc.Col(html.Div(id='player_stats_analysis'))], style={'height': '32vh'}),
             dbc.Row([dbc.Col(html.Div(id='player_similar'))], style={'height': '31vh'})
         ])

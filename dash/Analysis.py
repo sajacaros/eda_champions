@@ -123,3 +123,82 @@ class AnalysisAge(BaseBlock):
                 dbc.Row([dcc.Graph(figure={}, id='age-general-graph', config={'displayModeBar': False})])
             ], width=4, align='end'),
         ])
+
+
+class AnalysisStats(BaseBlock):
+    def __init__(self, df, app):
+        super().__init__(app, 'Analysis')
+        self._sample_data = df
+        self._player_name = None
+        self._player_df = None
+
+    def callbacks(self, app):
+        @app.callback(
+            Output(component_id="player_stats_analysis", component_property='children'),
+            [Input(component_id="player-select", component_property='value')]
+        )
+        def select_name(name):
+            if name:
+                self.change_player(name)
+            return self.render()
+
+        @app.callback(
+            Output(component_id='g-graph', component_property='figure'),
+            Input(component_id='player-select', component_property='value')
+        )
+        def update_stats_g(v):
+            return update_stats(['xG', 'G'])
+
+        @app.callback(
+            Output(component_id='a-graph', component_property='figure'),
+            Input(component_id='player-select', component_property='value')
+        )
+        def update_stats_a(v):
+            return update_stats(['xA', 'A'])
+
+        @app.callback(
+            Output(component_id='xgbuildup-graph', component_property='figure'),
+            Input(component_id='player-select', component_property='value')
+        )
+        def update_stats_xgbuildup(v):
+            return update_stats(['xGBuildup'])
+
+        def update_stats(features: list):
+            fig = px.line(
+                x=self._player_df.year,
+                y=self._player_df[features[0]],
+                markers=True,
+                labels={'x': 'year', 'y': f"{' - '.join(features)}"}
+            )
+            if len(features) > 1:
+                fig.add_scatter(
+                    x=self._player_df.year,
+                    y=self._player_df[features[1]],
+                    mode='lines+markers',
+                    showlegend=False
+                )
+            fig.update_layout(
+                title_text=f"{self._player_name}'s {' - '.join(features)}",
+                title={'x': 0.5, 'y': 0.94},
+                margin_r=0,
+                margin_l=0,
+                height=300
+            )
+            return fig
+
+    def change_player(self, player_name):
+        self._player_name = player_name
+        self._player_df = self._sample_data[self._sample_data['Name'] == player_name]
+
+    def render(self):
+        return dbc.Row([
+            dbc.Col([
+                dbc.Row([dcc.Graph(figure={}, id='g-graph', config={'displayModeBar': False})])
+            ], width=4, align='end'),
+            dbc.Col([
+                dbc.Row([dcc.Graph(figure={}, id='a-graph', config={'displayModeBar': False})])
+            ], width=4, align='end'),
+            dbc.Col([
+                dbc.Row([dcc.Graph(figure={}, id='xgbuildup-graph', config={'displayModeBar': False})])
+            ], width=4, align='end'),
+        ])
