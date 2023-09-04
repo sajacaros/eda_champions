@@ -7,7 +7,7 @@ import engineering
 
 feature_position = {
     'General': ['ADJ Salary', 'Apps', 'Min'],
-    'Forward-o': ['G', 'xG', 'NPG', 'A', 'xA', 'Drb_Off'],
+    'Forward-o': ['G', 'xG', 'NPG', 'A', 'xA', 'Drb_Off', 'xGBuildup'],
     'Forward-d': ['Tackles', 'Inter'],
     'Midfielder-o': ['G', 'xG', 'A', 'xA', 'xGBuildup', 'xGChain', 'KeyP', 'Drb_Off', 'AvgP', 'PS%'],
     'Midfielder-d': ['Tackles', 'Inter', 'Clear', 'Blocks'],
