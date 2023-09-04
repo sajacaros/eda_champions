@@ -19,7 +19,7 @@ stats = {
 
 def explain_terms():
     rows = [html.Div(html.H4('< Feature 설명 >'))]
-    for idx, (feature, mean) in enumerate(zip(stats['feature'], stats['mean'])):
+    for feature, mean in sorted(zip(stats['feature'], stats['mean']), key=lambda x: x[0]):
         rows.append(
             html.Div(
                 [html.Span(feature, style={'color': 'red'}), html.Span(' - '), html.Span(mean, style={'color': 'blue'})],
