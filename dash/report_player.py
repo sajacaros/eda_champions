@@ -8,7 +8,7 @@ from Similarity import CosineSimilarity
 
 def report_player(df, app, mins=1000):
     sample_data = df[df['Min'] > mins]
-    report = Report(sample_data, app)
+    report = ReportPlayer(sample_data, app)
     player_info = PlayerInfo(sample_data, app)
     sidebar = html.Div(
         [
@@ -18,7 +18,7 @@ def report_player(df, app, mins=1000):
 
     content = html.Div(
         [
-            report.render()
+            report()
         ]
     )
     return dbc.Container(
@@ -35,7 +35,7 @@ def report_player(df, app, mins=1000):
     )
 
 
-class Report:
+class ReportPlayer:
     def __init__(self, sample_data, app):
         self._age_analysis = AnalysisAge(sample_data, app)
         self._stats_analysis = AnalysisStats(sample_data, app)

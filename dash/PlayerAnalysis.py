@@ -124,6 +124,7 @@ class AnalysisAge(BaseBlock):
             ], width=4, align='end'),
         ])
 
+
 class AnalysisStats(BaseBlock):
     def __init__(self, df, app):
         super().__init__(df, app, 'Analysis')
