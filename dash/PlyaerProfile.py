@@ -2,38 +2,7 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 from dash import html, Output, Input, dcc
 
-from Analysis import AnalysisAge, AnalysisStats
 from Base import BaseBlock
-from Similarity import CosineSimilarity
-
-
-def report_player(df, app, mins=1000):
-    sample_data = df[df['Min'] > mins]
-    report = Report(sample_data, app)
-    player_info = PlayerInfo(sample_data, app)
-    sidebar = html.Div(
-        [
-            player_info.render()
-        ]
-    )
-
-    content = html.Div(
-        [
-            report.render()
-        ]
-    )
-    return dbc.Container(
-        [
-            dbc.Row(
-                [
-                    dbc.Col(sidebar, width=3, className='bg-light'),
-                    dbc.Col(content, width=9)
-                ],
-                style={"height": "90vh"}
-            ),
-        ],
-        fluid=True
-    )
 
 
 def get_history(player_df):
@@ -53,7 +22,7 @@ class PlayerInfo:
     def __init__(self, df, app):
         self.sample_data = df
         self._profile = Profile(self.sample_data, app)
-        self._stats = PlayerStats(self.sample_data, app)
+        self._salary = PlayerSalary(self.sample_data, app)
 
     def recommend_players(self):
         threshold = 200
@@ -75,7 +44,7 @@ class PlayerInfo:
             dbc.Card(dbc.Row(
                 dcc.Graph(
                     figure={},
-                    id='player_stats',
+                    id='player_salary',
                     config={
                         'displayModeBar': False
                     }
@@ -131,13 +100,13 @@ class Profile(BaseBlock):
         ], style={'height': '50vh'})
 
 
-class PlayerStats(BaseBlock):
+class PlayerSalary(BaseBlock):
     def __init__(self, sample_data, app):
         super().__init__(sample_data, app, 'PlayerStats')
 
     def callbacks(self, app):
         @app.callback(
-            Output(component_id="player_stats", component_property='figure'),
+            Output(component_id="player_salary", component_property='figure'),
             [Input(component_id="player-select", component_property='value')]
         )
         def select_name(name):
@@ -161,20 +130,3 @@ class PlayerStats(BaseBlock):
         fig.update_layout(title_text=f"Salary '{self._player_name}' vs Avg", title={'x': 0.5, 'y': 0.94}, margin_t=60,
                           margin_b=40, height=380)
         return fig
-
-
-class Report:
-    def __init__(self, sample_data, app):
-        self._age_analysis = AnalysisAge(sample_data, app)
-        self._stats_analysis = AnalysisStats(sample_data, app)
-        self._similarity_analysis = CosineSimilarity(sample_data, app)
-
-    def __call__(self, *args, **kwargs):
-        return self.render()
-
-    def render(self):
-        return html.Div([
-            dbc.Row([dbc.Col(html.Div(id='player_stats_analysis'))]),
-            dbc.Row([dbc.Col(html.Div(id='player_age_analysis'))]),
-            dbc.Row([dbc.Col(html.Div(id='player_similarity'))])
-        ])
