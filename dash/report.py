@@ -53,7 +53,7 @@ class PlayerInfo:
     def __init__(self, df, app):
         self.sample_data = df
         self._profile = Profile(self.sample_data, app)
-        self._stats = PlayerStats(self.sample_data, app)
+        self._salary = PlayerSalary(self.sample_data, app)
 
     def recommend_players(self):
         threshold = 200
@@ -75,7 +75,7 @@ class PlayerInfo:
             dbc.Card(dbc.Row(
                 dcc.Graph(
                     figure={},
-                    id='player_stats',
+                    id='player_salary',
                     config={
                         'displayModeBar': False
                     }
@@ -131,13 +131,13 @@ class Profile(BaseBlock):
         ], style={'height': '50vh'})
 
 
-class PlayerStats(BaseBlock):
+class PlayerSalary(BaseBlock):
     def __init__(self, sample_data, app):
         super().__init__(sample_data, app, 'PlayerStats')
 
     def callbacks(self, app):
         @app.callback(
-            Output(component_id="player_stats", component_property='figure'),
+            Output(component_id="player_salary", component_property='figure'),
             [Input(component_id="player-select", component_property='value')]
         )
         def select_name(name):
