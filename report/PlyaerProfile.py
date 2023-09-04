@@ -25,7 +25,7 @@ class PlayerInfo:
         self._salary = PlayerSalary(self.sample_data, app)
 
     def recommend_players(self):
-        threshold = 200
+        threshold = 50
         s_eda_df = self.sample_data.sort_values(by='Base Salary', ascending=False)  # 연봉으로 정렬
         s_eda_df = s_eda_df[s_eda_df['Position'] != 'Goalkeeper']  # Goalkeeper 제외
         return list(s_eda_df[~s_eda_df.duplicated(subset='Name', keep='first')].iloc[:threshold][['Name', 'Position']].itertuples(index=False))
