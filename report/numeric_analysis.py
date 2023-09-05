@@ -3,6 +3,7 @@ import plotly.express as px
 from dash import html, dcc, Output, Input
 
 from Base import BaseBlock
+from dictionary import stats_word
 
 
 def numeric_analysis(df, app):
@@ -29,7 +30,7 @@ class NumericAnalysis(BaseBlock):
             )
             fig.update_layout(
                 title={
-                    'text': self._numeric_columns[page-1 if page and page>0 else 0],
+                    'text': f"{selected_column}{'('+stats_word[selected_column]+')' if selected_column in stats_word else ''}",
                     'y': 0.95,
                     'x': 0.5,
                     'xanchor': 'center',
