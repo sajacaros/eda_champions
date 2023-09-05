@@ -3,7 +3,7 @@ from dash import html
 
 from PlayerAnalysis import AnalysisAge, AnalysisStats
 from PlyaerProfile import PlayerInfo
-from Similarity import CosineSimilarity
+from Similarity import Similarity
 
 
 def report_player(df, app, mins=1000):
@@ -39,7 +39,7 @@ class ReportPlayer:
     def __init__(self, sample_data, app):
         self._age_analysis = AnalysisAge(sample_data, app)
         self._stats_analysis = AnalysisStats(sample_data, app)
-        self._similarity_analysis = CosineSimilarity(sample_data, app)
+        self._similarity_analysis = Similarity(sample_data, app)
 
     def __call__(self, *args, **kwargs):
         return self.render()
