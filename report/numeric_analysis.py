@@ -53,7 +53,7 @@ class NumericAnalysis(BaseBlock):
                     'x': 0.5,
                     # 'xanchor': 'center',
                 },
-                margin_t=50,
+                margin_t=60,
                 showlegend=False
             )
             return fig
@@ -92,8 +92,8 @@ class NumericAnalysis(BaseBlock):
                     )]),
                 html.Hr(),
                 dbc.Row([
-                    dbc.Col(dcc.Graph(figure={}, id='histogram-graph', config={'displayModeBar': False}), width=4),
                     dbc.Col(dcc.Graph(figure={}, id='kde-graph', config={'displayModeBar': False}), width=4),
+                    dbc.Col(dcc.Graph(figure={}, id='histogram-graph', config={'displayModeBar': False}), width=5),
                     dbc.Col(html.Div(id='describe-text'), width=2, align='start', style={'margin-top': 50, 'display': 'block'}),
                 ],  align='center')
             ])
