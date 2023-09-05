@@ -3,6 +3,7 @@ import plotly.express as px
 from dash import html, dcc, Output, Input
 
 from Base import BaseBlock
+from dictionary import stats_word
 
 
 def numeric_analysis(df, app):
@@ -16,32 +17,35 @@ class NumericAnalysis(BaseBlock):
 
     def callbacks(self, app):
         @app.callback(
-            Output("selected-column", "children"),
-            [Input("select_column_num", "active_page")],
-        )
-        def change_page_column(page):
-            return self._numeric_columns[page-1 if page and page>0 else 0]
-
-
-        @app.callback(
             Output("histogram-graph", "figure"),
             [Input("select_column_num", "active_page"), Input("min-n", "value")]
         )
         def change_page_kde(page, min):
             selected_column = self._numeric_columns[page-1 if page and page>0 else 0]
-            return px.box(
+            fig = px.box(
                 self._sample_data[self._sample_data['Min'] > min],
                 y=selected_column,
-                hover_data=['Name', 'year', 'Position']
+                hover_data=['Name', 'year', 'Position', 'Team'],
+                color='Position'
             )
+            fig.update_layout(
+                title={
+                    'text': f"{selected_column}{'('+stats_word[selected_column]+')' if selected_column in stats_word else ''}",
+                    'y': 0.95,
+                    'x': 0.5,
+                    'xanchor': 'center',
+                    # 'yanchor': 'top'
+                })
+            return fig
+
 
         @app.callback(
             Output("describe-text", "children"),
-            [Input("select_column_num", "active_page")],
+            [Input("select_column_num", "active_page"), Input("min-n", "value")],
         )
-        def change_page_describe(page):
+        def change_page_describe(page, min):
             selected_column = self._numeric_columns[page-1 if page else 0]
-            s = self._sample_data[selected_column].describe()
+            s = self._sample_data.loc[self._sample_data['Min'] > min, selected_column].describe()
             return [dbc.Row([dbc.Col(column), dbc.Col(round(v,2))]) for column, v in zip(s.index, s)]
 
     def render(self):
@@ -55,7 +59,6 @@ class NumericAnalysis(BaseBlock):
             dbc.CardBody([
                 dbc.Row([pagination], justify='center'),
                 dbc.Row([
-                    dbc.Col(html.Div(id='selected-column'),width=1),
                     dbc.Col(
                         dcc.RadioItems(
                             id="min-n",
@@ -65,13 +68,13 @@ class NumericAnalysis(BaseBlock):
                             inputStyle={"margin-right": "5px"},
                             labelStyle={"margin-right": "20px"}
                         ),
-                        width=11
+                        width=12
                     )]),
                 html.Hr(),
                 dbc.Row([
-                    dbc.Col(html.Div(id='describe-text'), width=2),
                     dbc.Col(dcc.Graph(figure={}, id='histogram-graph', config={'displayModeBar': False}), width=4),
-                ], justify="evenly", align='center')
+                    dbc.Col(html.Div(id='describe-text'), width=2, align='start', style={'margin-top':50}),
+                ],  align='center')
             ])
         )
 
