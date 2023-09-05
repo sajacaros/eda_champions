@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 from dash import html, Output, Input, dcc
 
-from Base import BaseBlock
+from report.Base import BaseBlock
 
 
 def get_history(player_df):

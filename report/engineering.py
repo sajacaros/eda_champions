@@ -1,23 +1,24 @@
 import pandas as pd
 
 
-def get_player():
-    return pd.read_csv('../data/new/players_all.csv').drop('Unnamed: 0', axis=1)
+def get_player(parent_path):
+    return pd.read_csv(f'{parent_path}/new/players_all.csv').drop('Unnamed: 0', axis=1)
 
 
-def get_xbet():
-    df = (pd.read_csv('../data/new/1xbet_all.csv')
-            .drop(['Team', 'Age', 'Position'], axis=1)
-            .rename(columns={'Drb_x': 'Drb_Off', 'Drb_y': 'Drb_Def'}))
+def get_xbet(parent_path):
+    df = (pd.read_csv(f'{parent_path}/new/1xbet_all.csv')
+          .drop(['Team', 'Age', 'Position'], axis=1)
+          .rename(columns={'Drb_x': 'Drb_Off', 'Drb_y': 'Drb_Def'}))
     df['Rating'] = df['Rating'] * 10
     return df
 
 
-def get_understat():
-    return pd.read_csv('../data/new/understat_all.csv').drop(['No', 'Team'], axis=1)
+def get_understat(parent_path):
+    return pd.read_csv(f'{parent_path}/new/understat_all.csv').drop(['No', 'Team'], axis=1)
 
-def get_capology():
-    return pd.read_csv('../data/new/capology_all.csv')
+
+def get_capology(parent_path):
+    return pd.read_csv(f'{parent_path}/new/capology_all.csv')
 
 
 def merge(player_df, xbet_df, understat_df, capology_df):
@@ -42,6 +43,8 @@ def merge(player_df, xbet_df, understat_df, capology_df):
 
 
 age_order = ['<21', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '32<']
+
+
 def feature_check(eda_df):
     eda_df = eda_df.copy()
     eda_df = eda_df.dropna()
@@ -50,14 +53,14 @@ def feature_check(eda_df):
     return eda_df
 
 
-def get_data():
+def get_data(parent_path='../data'):
     # plyaer data load 및 정리(프로필)
-    player_df = get_player()
+    player_df = get_player(parent_path)
     # 1xbet data load 및 정리(스텟)
-    xbet_df = get_xbet()
+    xbet_df = get_xbet(parent_path)
     # understat data load 및 정리(스텟)
-    understat_df = get_understat()
+    understat_df = get_understat(parent_path)
     # capology load(연봉)
-    capology_df = get_capology()
+    capology_df = get_capology(parent_path)
     eda_df = merge(player_df, xbet_df, understat_df, capology_df)
     return feature_check(eda_df)

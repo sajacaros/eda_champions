@@ -3,8 +3,8 @@ import plotly.express as px
 from dash import html, dcc, Output, Input
 import plotly.figure_factory as ff
 
-from Base import BaseBlock
-from dictionary import stats_word
+from report.Base import BaseBlock
+from report.dictionary import stats_word
 
 
 def numeric_analysis(df, app):

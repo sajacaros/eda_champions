@@ -1,9 +1,9 @@
 import dash_bootstrap_components as dbc
 from dash import html
 
-from PlayerAnalysis import AnalysisAge, AnalysisStats
-from PlyaerProfile import PlayerInfo
-from Similarity import Similarity
+from report.PlayerAnalysis import AnalysisAge, AnalysisStats
+from report.PlyaerProfile import PlayerInfo
+from report.Similarity import Similarity
 
 
 def report_player(df, app, mins=1000):

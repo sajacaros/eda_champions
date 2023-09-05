@@ -2,8 +2,9 @@ import pandas as pd
 from dash import Output, Input, html
 from sklearn.preprocessing import RobustScaler
 from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
-from Base import BaseBlock
 import dash_bootstrap_components as dbc
+
+from report.Base import BaseBlock
 
 
 def create_profile(similarity_series):
