@@ -21,8 +21,6 @@ def report_team(df, app, mins=1000):
         fluid=True
     )
 
-def fig_update(fig, stats) :
-    fig.update_layout(height=250, xaxis_title=None, title={'text': ' - '.join(stats), 'x': 0.5})
 
 
 class ReportTeam(BaseBlock):
@@ -36,32 +34,31 @@ class ReportTeam(BaseBlock):
         return self.render()
 
     def callbacks(self, app):
+        def figure_team_graph(stats):
+            fig = px.bar(self._team_stats, x='Team', y=stats, barmode='group')
+            fig.update_layout(height=250, xaxis_title=None, title={'text': ' - '.join(stats), 'x': 0.5})
+            return fig
+
         @app.callback(
             Output(component_id='team_graph-0', component_property='figure'),
             Input(component_id='team_checklist-0', component_property='value')
         )
         def update_graph(stats):
-            fig = px.bar(self._team_stats, x='Team', y=stats, barmode='group')
-            fig_update(fig, stats)
-            return fig
+            return figure_team_graph(stats)
 
         @app.callback(
             Output(component_id='team_graph-1', component_property='figure'),
             Input(component_id='team_checklist-1', component_property='value')
         )
         def update_graph(stats):
-            fig = px.bar(self._team_stats, x='Team', y=stats, barmode='group')
-            fig_update(fig, stats)
-            return fig
+            return figure_team_graph(stats)
 
         @app.callback(
             Output(component_id='team_graph-2', component_property='figure'),
             Input(component_id='team_checklist-2', component_property='value')
         )
         def update_graph(stats):
-            fig = px.bar(self._team_stats, x='Team', y=stats, barmode='group')
-            fig_update(fig, stats)
-            return fig
+            return figure_team_graph(stats)
 
     def render(self):
         return html.Div([
