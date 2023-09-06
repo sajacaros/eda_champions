@@ -19,10 +19,10 @@ class NumericAnalysis(BaseBlock):
     def callbacks(self, app):
         @app.callback(
             Output("histogram-graph", "figure"),
-            [Input("select_column_num", "active_page"), Input("min-n", "value")]
+            [Input("select_column_num", "value"), Input("min-n", "value")]
         )
         def change_page_histogram(page, min):
-            selected_column = self._numeric_columns[page-1 if page and page>0 else 0]
+            selected_column = self._numeric_columns[page]
             fig = px.box(
                 self._sample_data[self._sample_data['Min'] > min],
                 y=selected_column,
@@ -40,10 +40,10 @@ class NumericAnalysis(BaseBlock):
 
         @app.callback(
             Output("kde-graph", "figure"),
-            [Input("select_column_num", "active_page"), Input("min-n", "value")]
+            [Input("select_column_num", "value"), Input("min-n", "value")]
         )
         def change_page_kde(page, min_v):
-            selected_column = self._numeric_columns[page - 1 if page and page > 0 else 0]
+            selected_column = self._numeric_columns[page]
             group_labels = ['distplot']  # name of the dataset
             fig = ff.create_distplot([self._sample_data.loc[self._sample_data['Min'] > min_v, selected_column].tolist()], group_labels, show_hist=False, show_rug=False)
             fig.update_layout(
@@ -60,24 +60,33 @@ class NumericAnalysis(BaseBlock):
 
         @app.callback(
             Output("describe-text", "children"),
-            [Input("select_column_num", "active_page"), Input("min-n", "value")],
+            [Input("select_column_num", "value"), Input("min-n", "value")],
         )
         def change_page_describe(page, min):
-            selected_column = self._numeric_columns[page-1 if page else 0]
+            selected_column = self._numeric_columns[page]
             s = self._sample_data.loc[self._sample_data['Min'] > min, selected_column].describe()
             return [dbc.Row([dbc.Col(column, className='text-center'), dbc.Col(round(v,2))]) for column, v in zip(s.index, s)]
 
     def render(self):
-        pagination = html.Div(
-            dbc.Pagination(
-                id='select_column_num',
-                max_value=len(self._numeric_columns)
-            ),
-        )
         return dbc.Card(
             dbc.CardBody([
-                dbc.Row([pagination], justify='center'),
                 dbc.Row([
+                    dbc.RadioItems(
+                        id="select_column_num",
+                        className="btn-group",
+                        inputClassName="btn-check",
+                        labelClassName="btn btn-outline-primary",
+                        labelCheckedClassName="active",
+                        options=[
+                            {"label": column_name, "value": idx} for idx, column_name in enumerate(self._numeric_columns)
+                        ],
+                        value=0,
+                        style={'flex-wrap':'wrap'}
+                    ),
+                ], justify='center'),
+                html.Hr(),
+                dbc.Row([
+                    dbc.Col(html.Span('최소 출전 시간'), width=1),
                     dbc.Col(
                         dcc.RadioItems(
                             id="min-n",
@@ -87,7 +96,7 @@ class NumericAnalysis(BaseBlock):
                             inputStyle={"margin-right": "5px"},
                             labelStyle={"margin-right": "20px"}
                         ),
-                        width=12
+                        width=11
                     )]),
                 html.Hr(),
                 dbc.Row([
