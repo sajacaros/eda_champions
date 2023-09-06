@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc, Output, Input
 import plotly.express as px
 
-from Base import BaseBlock
+from report.Base import BaseBlock
 
 
 def report_team(df, app, mins=1000):

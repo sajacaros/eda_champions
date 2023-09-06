@@ -3,8 +3,8 @@ import plotly.express as px
 from dash import html, dcc, Output, Input
 import plotly.figure_factory as ff
 
-from Base import BaseBlock
-from dictionary import stats_word
+from report.Base import BaseBlock
+from report.dictionary import stats_word
 
 
 def numeric_analysis(df, app):
@@ -42,16 +42,15 @@ class NumericAnalysis(BaseBlock):
             Output("kde-graph", "figure"),
             [Input("select_column_num", "active_page"), Input("min-n", "value")]
         )
-        def change_page_kde(page, min):
+        def change_page_kde(page, min_v):
             selected_column = self._numeric_columns[page - 1 if page and page > 0 else 0]
             group_labels = ['distplot']  # name of the dataset
-            fig = ff.create_distplot([self._sample_data.loc[self._sample_data['Min'] > min, selected_column].tolist()], group_labels, show_hist=False, show_rug=False)
+            fig = ff.create_distplot([self._sample_data.loc[self._sample_data['Min'] > min_v, selected_column].tolist()], group_labels, show_hist=False, show_rug=False)
             fig.update_layout(
                 title={
                     'text': f"{selected_column}{'(' + stats_word[selected_column] + ')' if selected_column in stats_word else ''}'s Density Curve",
                     'y': 0.95,
                     'x': 0.5,
-                    # 'xanchor': 'center',
                 },
                 margin_t=60,
                 showlegend=False

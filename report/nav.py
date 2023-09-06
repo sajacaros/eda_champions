@@ -1,10 +1,10 @@
 import dash_bootstrap_components as dbc
 
-from corr import corr_scatter
-from report_player import report_player
-from report_team import report_team
-from dictionary import explain_terms
-from numeric_analysis import numeric_analysis
+from report.corr import corr_scatter
+from report.report_player import report_player
+from report.report_team import report_team
+from report.dictionary import explain_terms
+from report.numeric_analysis import numeric_analysis
 
 
 def tabs(df, app):

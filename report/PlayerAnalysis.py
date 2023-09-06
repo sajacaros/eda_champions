@@ -1,9 +1,9 @@
-from dash import Output, Input, dcc
 import dash_bootstrap_components as dbc
 import plotly.express as px
+from dash import Output, Input, dcc
 
-from Base import BaseBlock
-import engineering
+from report import engineering
+from report.Base import BaseBlock
 
 feature_position = {
     'General': ['ADJ Salary', 'Apps', 'Min'],
