@@ -9,4 +9,4 @@ if __name__ == '__main__':
     app.title = 'EDA 챔피언스⚽'
     app.layout = dbc.Container(tabs(engineering.get_data(parent_path='data'), app), fluid=True)
 
-    app.run(debug=True)
+    app.run(debug=False)
