@@ -18,10 +18,10 @@ class NumericAnalysis(BaseBlock):
 
     def callbacks(self, app):
         @app.callback(
-            Output("histogram-graph", "figure"),
+            Output("box-graph", "figure"),
             [Input("select_column_num", "value"), Input("min-n", "value")]
         )
-        def change_page_histogram(page, min):
+        def change_page_box(page, min):
             selected_column = self._numeric_columns[page]
             fig = px.box(
                 self._sample_data[self._sample_data['Min'] > min],
@@ -31,7 +31,7 @@ class NumericAnalysis(BaseBlock):
             )
             fig.update_layout(
                 title={
-                    'text': f"{selected_column}{'('+stats_word[selected_column]+')' if selected_column in stats_word else ''}'s Histogram",
+                    'text': f"{selected_column}{'('+stats_word[selected_column]+')' if selected_column in stats_word else ''}'s Box",
                     'y': 0.95,
                     'x': 0.5,
                     # 'xanchor': 'center',
@@ -101,7 +101,7 @@ class NumericAnalysis(BaseBlock):
                             )]),
                         dbc.Row([
                             dbc.Col(dcc.Graph(figure={}, id='kde-graph', config={'displayModeBar': False}), width=4),
-                            dbc.Col(dcc.Graph(figure={}, id='histogram-graph', config={'displayModeBar': False}), width=5),
+                            dbc.Col(dcc.Graph(figure={}, id='box-graph', config={'displayModeBar': False}), width=5),
                             dbc.Col(html.Div(id='describe-text'), width=2, align='start', style={'margin-top': 50, 'display': 'block'}),
                         ],  align='center')
                     ], width=10)
