@@ -128,5 +128,5 @@ class PlayerSalary(BaseBlock):
         )
         fig.add_scatter(x=player_df['year'], y=player_df['Base Salary'], mode='lines+markers', showlegend=False)
         fig.update_layout(title_text=f"Salary '{self._player_name}' vs Avg", title={'x': 0.5, 'y': 0.94}, margin_t=60,
-                          margin_b=40, height=380)
+                          margin_b=40, height=450)
         return fig

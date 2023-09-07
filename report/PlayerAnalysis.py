@@ -75,7 +75,7 @@ class AnalysisAge(BaseBlock):
                 title={'x': 0.5, 'y': 0.94},
                 margin_r=0,
                 margin_l=0,
-                height=300,
+                height=340,
                 legend_yanchor="top",
                 legend_y=0.99,
                 legend_xanchor="left",

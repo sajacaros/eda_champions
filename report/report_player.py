@@ -28,7 +28,7 @@ def report_player(df, app, mins=1000):
                     dbc.Col(sidebar, width=3, className='bg-light'),
                     dbc.Col(content, width=9)
                 ],
-                style={"height": "90vh"}
+                style={"height": "95vh"}
             ),
         ],
         fluid=True
