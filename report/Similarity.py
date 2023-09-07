@@ -111,7 +111,7 @@ class Similarity(BaseBlock):
                         value='cosine',
                         id='similarity-radio-item',
                         inline=True
-                    ), width=2
+                    ), width=4
                 ),
             ]),
             dbc.Row(html.Div(id='similarity_view'))

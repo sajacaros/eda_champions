@@ -69,43 +69,43 @@ class NumericAnalysis(BaseBlock):
 
     def render(self):
         return dbc.Card(
-            dbc.CardBody([
+            dbc.CardBody(
                 dbc.Row([
-                    dbc.RadioItems(
-                        id="select_column_num",
-                        className="btn-group",
-                        inputClassName="btn-check",
-                        labelClassName="btn btn-outline-primary",
-                        labelCheckedClassName="active",
-                        options=[
-                            {"label": column_name, "value": idx} for idx, column_name in enumerate(self._numeric_columns)
-                        ],
-                        value=0,
-                        style={'flex-wrap':'wrap'}
-                    ),
-                ], justify='center'),
-                html.Hr(),
-                dbc.Row([
-                    dbc.Col(html.Span('최소 출전 시간'), width=1),
-                    dbc.Col(
-                        dcc.RadioItems(
-                            id="min-n",
-                            options=[0, *list(range(1000,2100,100))],
+                    dbc.Col([
+                        dbc.RadioItems(
+                            id="select_column_num",
+                            className="btn-group",
+                            inputClassName="btn-check",
+                            labelClassName="btn btn-outline-primary",
+                            labelCheckedClassName="active",
+                            options=[
+                                {"label": column_name, "value": idx} for idx, column_name in enumerate(self._numeric_columns)
+                            ],
                             value=0,
-                            inline=True,
-                            inputStyle={"margin-right": "5px"},
-                            labelStyle={"margin-right": "20px"}
+                            style={'flex-wrap':'wrap'}
                         ),
-                        width=11
-                    )]),
-                html.Hr(),
-                dbc.Row([
-                    dbc.Col(dcc.Graph(figure={}, id='kde-graph', config={'displayModeBar': False}), width=4),
-                    dbc.Col(dcc.Graph(figure={}, id='histogram-graph', config={'displayModeBar': False}), width=5),
-                    dbc.Col(html.Div(id='describe-text'), width=2, align='start', style={'margin-top': 50, 'display': 'block'}),
-                ],  align='center')
-            ])
+                    ], width=2, className='bg-light border'),
+                    dbc.Col([
+                        dbc.Row([
+                            dbc.Col(html.Span('최소 출전 시간'), width=1),
+                            dbc.Col(
+                                dcc.RadioItems(
+                                    id="min-n",
+                                    options=[0, *list(range(1000,2100,100))],
+                                    value=0,
+                                    inline=True,
+                                    inputStyle={"margin-right": "5px"},
+                                    labelStyle={"margin-right": "20px"}
+                                ),
+                                width=11
+                            )]),
+                        dbc.Row([
+                            dbc.Col(dcc.Graph(figure={}, id='kde-graph', config={'displayModeBar': False}), width=4),
+                            dbc.Col(dcc.Graph(figure={}, id='histogram-graph', config={'displayModeBar': False}), width=5),
+                            dbc.Col(html.Div(id='describe-text'), width=2, align='start', style={'margin-top': 50, 'display': 'block'}),
+                        ],  align='center')
+                    ], width=10)
+                ])
+            )
         )
-
-
 

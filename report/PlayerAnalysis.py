@@ -56,7 +56,7 @@ class AnalysisAge(BaseBlock):
         def update_stats(y_col_chosen, category):
             position = self._player_df['Position'].to_list()[0]
             fig = px.line(labels={'x': 'Age', 'y': y_col_chosen})
-            fig = fig.add_scatter(
+            fig.add_scatter(
                 name='Avg',
                 x=engineering.age_order,
                 y=self._sample_data.groupby(['Position', 'Age Lev']).mean(numeric_only=True).loc[position, y_col_chosen],
@@ -169,7 +169,7 @@ class AnalysisStats(BaseBlock):
 
         def update_stats(features: list):
             fig = px.line(labels={'x': 'year', 'y': f"{' - '.join(features)}"})
-            fig = fig.add_scatter(
+            fig.add_scatter(
                 name=features[0],
                 x=self._player_df.year,
                 y=self._player_df[features[0]],
@@ -196,8 +196,6 @@ class AnalysisStats(BaseBlock):
                 legend_x=0.01,
                 legend_bgcolor='rgba(0,0,0,0)'
             )
-            # fig.update_xaxes(range=[2013, 2023])
-            # self._sample_data
             return fig
 
     def render(self):
